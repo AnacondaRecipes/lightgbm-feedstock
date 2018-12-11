@@ -13,30 +13,27 @@ source:
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"  # [not osx]
-  script: 'export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"; {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv'  # [osx]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv"  # [not osx]
+  script: 'export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"; {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv'  # [osx]
   skip: True  # [win32]
 
 requirements:
   build:
-    - cmake >=3.8
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp       # [osx]
   host:
+    - cmake
     - python
     - pip
     - setuptools
-    - clangdev 4.0*  # [osx]
-    - libcxx 4.0.*  # [osx]
-    - openmp 4.0.*  # [osx]
+    - llvm-openmp       # [osx]
   run:
     - python
     - numpy
     - scipy
     - scikit-learn
-    - clangdev 4.0*  # [osx]
-    - libcxx 4.0.*  # [osx]
-    - openmp 4.0.*  # [osx]
+    - llvm-openmp       # [osx]
 
 test:
   imports:
