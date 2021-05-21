@@ -21,7 +21,7 @@ requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cmake >=3.8
-    - make
+    - make  # [unix]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - llvm-openmp       # [osx]
