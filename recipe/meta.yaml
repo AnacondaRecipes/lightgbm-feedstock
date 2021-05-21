@@ -19,21 +19,23 @@ build:
 
 requirements:
   build:
+    - python                                 # [build_platform != target_platform]
+    - cmake >=3.8
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - llvm-openmp       # [osx]
   host:
-    - cmake
     - python
     - pip
     - setuptools
-    - llvm-openmp       # [osx]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
     - python
     - numpy
     - scipy
-    - scikit-learn
-    - llvm-openmp       # [osx]
+    - scikit-learn !=0.22.0
 
 test:
   imports:
