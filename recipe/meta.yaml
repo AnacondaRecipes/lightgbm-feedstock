@@ -30,7 +30,6 @@ requirements:
     - pip
     - setuptools
     - llvm-openmp  # [osx]
-    - libgomp  # [linux]
   run:
     - python
     - numpy
