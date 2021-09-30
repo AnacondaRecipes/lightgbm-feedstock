@@ -31,6 +31,7 @@ requirements:
     - setuptools
     - wheel
     - llvm-openmp       # [osx]
+    - libgomp  # [linux]
   run:
     - python
     - numpy
