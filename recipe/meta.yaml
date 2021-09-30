@@ -21,9 +21,11 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - python            # [build_platform != target_platform]
+    - cmake >=3.8
+    - make              # [unix]
     - llvm-openmp       # [osx]
   host:
-    - cmake
     - python
     - pip
     - setuptools
@@ -32,12 +34,16 @@ requirements:
     - python
     - numpy
     - scipy
-    - scikit-learn
+    - scikit-learn !=0.22.0
     - llvm-openmp       # [osx]
 
 test:
   imports:
     - lightgbm
+  requires:
+    - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/Microsoft/LightGBM
