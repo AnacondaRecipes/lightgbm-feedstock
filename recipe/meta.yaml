@@ -18,6 +18,11 @@ build:
   # By default, installation in environment with 32-bit Python is prohibited 
   # by the maintainers, see https://github.com/microsoft/LightGBM/tree/master/python-package#build-32-bit-version-with-32-bit-python.
   skip: True  # [win32]
+  missing_dso_whitelist:  # [s390x]
+    # Mildly concerned this triggers an overlinking warning, but it may be a
+    # sign some S390X-specific changes needed in conda-build.  Leaving this in
+    # while we investigate so the linux-s390x build out can continue.
+    - "*/ld64.so.1"   # [s390x]
 
 requirements:
   build:
@@ -40,6 +45,9 @@ requirements:
     - scipy
     - scikit-learn !=0.22.0
     - llvm-openmp       # [osx]
+    # Using selector until packages for other platforms are (re)built using
+    # newer defaults toolchains that use the `_openmp_mutex` mechanism.
+    - _openmp_mutex                      # [s390x]
 
 test:
   imports:
