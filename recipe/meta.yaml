@@ -1,6 +1,6 @@
 {% set name = "lightgbm" %}
-{% set version = "3.1.1" %}
-{% set sha256 = "babece2e3613e97748a67ed45387bb0e984bdb1f4126e39f010fbfe7503c7b20" %}
+{% set version = "3.2.1" %}
+{% set sha256 = "bd98e3b501b4c24dc127f4ad93e467f42923fe3eefa99e143b5b93158f024395" %}
 
 package:
   name: {{ name|lower }}
@@ -15,29 +15,47 @@ build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv"  # [not osx]
   script: 'export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"; {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv'  # [osx]
+  # By default, installation in environment with 32-bit Python is prohibited 
+  # by the maintainers, see https://github.com/microsoft/LightGBM/tree/master/python-package#build-32-bit-version-with-32-bit-python.
   skip: True  # [win32]
+  missing_dso_whitelist:  # [s390x]
+    # Mildly concerned this triggers an overlinking warning, but it may be a
+    # sign some S390X-specific changes needed in conda-build.  Leaving this in
+    # while we investigate so the linux-s390x build out can continue.
+    - "*/ld64.so.1"   # [s390x]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - python            # [build_platform != target_platform]
+    - cmake >=3.8
+    - make              # [unix]
     - llvm-openmp       # [osx]
   host:
-    - cmake
     - python
     - pip
     - setuptools
+    - wheel
     - llvm-openmp       # [osx]
+    - libgomp  # [linux64]
   run:
     - python
     - numpy
     - scipy
-    - scikit-learn
+    - scikit-learn !=0.22.0
     - llvm-openmp       # [osx]
+    # Using selector until packages for other platforms are (re)built using
+    # newer defaults toolchains that use the `_openmp_mutex` mechanism.
+    - _openmp_mutex                      # [s390x]
 
 test:
   imports:
     - lightgbm
+  requires:
+    - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/Microsoft/LightGBM
