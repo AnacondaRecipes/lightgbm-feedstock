@@ -53,6 +53,11 @@ about:
   dev_url: https://github.com/Microsoft/LightGBM
 
 extra:
+
+  anaconda-services:
+    ref: https://anaconda.zendesk.com/agent/tickets/30613 
+    recipe-maintainers:
+      - ianaobi
   recipe-maintainers:
     - synapticarbors
     - aldanor
