@@ -1,6 +1,7 @@
 {% set name = "lightgbm" %}
-{% set version = "3.2.1" %}
-{% set sha256 = "bd98e3b501b4c24dc127f4ad93e467f42923fe3eefa99e143b5b93158f024395" %}
+
+{% set version = "3.3.3" %}
+{% set sha256 = "857e559ae84a22963ce2b62168292969d21add30bc9246a84d4e7eedae67966d" %}
 
 package:
   name: {{ name|lower }}
@@ -36,18 +37,18 @@ requirements:
     - python
     - pip
     - setuptools
+
     - wheel
     - llvm-openmp       # [osx]
     - libgomp  # [linux64]
+
   run:
     - python
     - numpy
     - scipy
     - scikit-learn !=0.22.0
-    - llvm-openmp       # [osx]
-    # Using selector until packages for other platforms are (re)built using
-    # newer defaults toolchains that use the `_openmp_mutex` mechanism.
-    - _openmp_mutex                      # [s390x]
+
+
 
 test:
   imports:
@@ -62,7 +63,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'LightGBM is a gradient boosting framework that uses tree based learning algorithms.'
+  summary: LightGBM is a gradient boosting framework that uses tree based learning algorithms.
 
   description: |
     A fast, distributed, high performance gradient boosting (GBDT, GBRT, GBM or MART) framework based on decision tree algorithms, used for ranking, classification and many other machine learning tasks.
@@ -70,6 +71,12 @@ about:
   dev_url: https://github.com/Microsoft/LightGBM
 
 extra:
+
+  anaconda-services:
+    ref: https://anaconda.zendesk.com/agent/tickets/30613 
+    recipe-maintainers:
+      - ianaobi
   recipe-maintainers:
     - synapticarbors
     - aldanor
+    - xhochy
