@@ -13,7 +13,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv"  # [not osx]
   script: 'export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"; {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vv'  # [osx]
   # By default, installation in environment with 32-bit Python is prohibited 
