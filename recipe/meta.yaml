@@ -14,6 +14,9 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  missing_dso_whitelist:  # [s390x or osx]
+    - "*/ld64.so.1"       # [s390x]
+    - '*/libc++.1.dylib'  # [osx]
 
 requirements:
   build:
@@ -34,6 +37,7 @@ requirements:
     - numpy
     - scipy
     - scikit-learn !=0.22.0
+    - _openmp_mutex      # [linux]
 
 test:
   imports:
