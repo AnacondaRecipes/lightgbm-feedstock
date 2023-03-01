@@ -27,7 +27,8 @@ requirements:
     - setuptools
     - wheel
     - llvm-openmp 14.0.6  # [osx]
-    - libgomp 11.2.0      # [linux]
+    # libgomp pulled in through gcc setup
+    # - libgomp 11.2.0      # [linux]
   run:
     - python
     - numpy
