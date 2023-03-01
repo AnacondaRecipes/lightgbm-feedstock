@@ -21,7 +21,7 @@ build:
 requirements:
   build:
     - cmake >=3.8
-    - make
+    - make                  # [unix]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
