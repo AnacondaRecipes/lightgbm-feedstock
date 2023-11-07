@@ -1,22 +1,20 @@
 {% set name = "lightgbm" %}
-{% set version = "3.3.5" %}
-{% set sha256 = "10b8fbdcf851e4f68a1f02f38d99bdc44c7c7fb9b1a62dcf924a0d29ff73395c" %}
+{% set version = "4.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: bee59dd269a93b093f2c610d4a6683a7ea87c63d3ea35c622123ce2c020b2abc
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
-  missing_dso_whitelist:  # [s390x or osx]
-    - "*/ld64.so.1"       # [s390x]
-    - '*/libc++.1.dylib'  # [osx]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  # missing_dso_whitelist:  # [s390x or osx]
+  #   - "*/ld64.so.1"       # [s390x]
+  #   - '*/libc++.1.dylib'  # [osx]
 
 requirements:
   build:
@@ -25,6 +23,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - scikit-build-core >=0.4.4
     - python
     - pip
     - setuptools
@@ -36,8 +35,13 @@ requirements:
     - python
     - numpy
     - scipy
+    # - _openmp_mutex      # [linux]
+  run_constrained:
     - scikit-learn !=0.22.0
-    - _openmp_mutex      # [linux]
+    - pandas >=0.24.0
+    - pyarrow >=6.0.1
+    - cffi >=1.15.1
+    - dask >=2.0.0"
 
 test:
   imports:
@@ -54,12 +58,12 @@ about:
   license_file: LICENSE
   summary: LightGBM is a gradient boosting framework that uses tree based learning algorithms.
   description: |
-    A fast, distributed, high performance gradient boosting (GBDT, GBRT, GBM or MART) framework based on decision tree algorithms, used for ranking, classification and many other machine learning tasks.
+    A fast, distributed, high performance gradient boosting (GBDT, GBRT, GBM or MART) framework 
+    based on decision tree algorithms, used for ranking, classification and many other machine learning tasks.
   doc_url: https://lightgbm.readthedocs.io
   dev_url: https://github.com/Microsoft/LightGBM
 
 extra:
-
   anaconda-services:
     ref: https://anaconda.zendesk.com/agent/tickets/30613 
     recipe-maintainers:
