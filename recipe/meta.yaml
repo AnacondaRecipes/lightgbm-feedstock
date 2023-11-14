@@ -12,9 +12,6 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  # missing_dso_whitelist:  # [s390x or osx]
-  #   - "*/ld64.so.1"       # [s390x]
-  #   - '*/libc++.1.dylib'  # [osx]
 
 requirements:
   build:
@@ -28,26 +25,19 @@ requirements:
     - pip
     - setuptools
     - wheel
-    - llvm-openmp 14.0.6  # [osx]
-    # libgomp pulled in through gcc setup
-    # - libgomp 11.2.0      # [linux]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
     - python
     - numpy
     - scipy
-    # - _openmp_mutex      # [linux]
-  run_constrained:
-    - scikit-learn !=0.22.0
-    - pandas >=0.24.0
-    - pyarrow >=6.0.1
-    - cffi >=1.15.1
-    - dask >=2.0.0"
 
 test:
   imports:
     - lightgbm
   requires:
     - pip
+    - scikit-learn !=0.22.0
   commands:
     - pip check
 
@@ -64,10 +54,6 @@ about:
   dev_url: https://github.com/Microsoft/LightGBM
 
 extra:
-  anaconda-services:
-    ref: https://anaconda.zendesk.com/agent/tickets/30613 
-    recipe-maintainers:
-      - ianaobi
   recipe-maintainers:
     - synapticarbors
     - aldanor
