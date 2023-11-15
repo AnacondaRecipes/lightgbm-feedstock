@@ -23,14 +23,20 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
+    # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64. 
+    # By default, mkl variants are picked. By picking the variant that uses openblas rather 
+    # than mkl, intel-openmp will not be pulled in and so you will not have llvm-openmp / intel-openmp conflict. 
+    - blas=*=openblas # [osx and x86_64]
     - scikit-build-core >=0.4.4
     - python
     - pip
     - setuptools
     - wheel
     - llvm-openmp  # [osx]
-    - libgomp  # [linux]
+    - libgomp      # [linux]
   run:
+    - blas=*=openblas # [osx and x86_64]  
     - python
     - numpy
     - scipy
