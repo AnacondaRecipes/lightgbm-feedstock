@@ -39,15 +39,20 @@ requirements:
   run:
     - blas=*=openblas # [osx and x86_64]  
     - python
+    - dataclasses # [py<37]
     - numpy
     - scipy
+  run_constrained: 
+    - scikit-learn !=0.22.0
+    - pandas>=0.24.0
+    - dask >=2.0.0
 
 test:
   imports:
     - lightgbm
   requires:
     - pip
-    - scikit-learn !=0.22.0
+    - scikit-learn
   commands:
     - pip check
 
