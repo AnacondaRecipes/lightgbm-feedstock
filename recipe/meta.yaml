@@ -32,8 +32,6 @@ requirements:
     - scikit-build-core >=0.4.4
     - python
     - pip
-    - setuptools
-    - wheel
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
   run:
