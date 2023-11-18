@@ -1,19 +1,18 @@
 {% set name = "lightgbm" %}
-{% set version = "3.3.5" %}
-{% set sha256 = "10b8fbdcf851e4f68a1f02f38d99bdc44c7c7fb9b1a62dcf924a0d29ff73395c" %}
+{% set version = "4.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: bee59dd269a93b093f2c610d4a6683a7ea87c63d3ea35c622123ce2c020b2abc
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Visual Studio 16 2019"  # [win]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv  # [unix]
   missing_dso_whitelist:  # [s390x or osx]
     - "*/ld64.so.1"       # [s390x]
     - '*/libc++.1.dylib'  # [osx]
@@ -25,25 +24,33 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
+    # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64. 
+    # By default, mkl variants are picked. By picking the variant that uses openblas rather 
+    # than mkl, intel-openmp will not be pulled in and so you will not have llvm-openmp / intel-openmp conflict. 
+    - blas=*=openblas # [osx and x86_64]
+    - scikit-build-core >=0.4.4
     - python
     - pip
-    - setuptools
-    - wheel
-    - llvm-openmp 14.0.6  # [osx]
-    # libgomp pulled in through gcc setup
-    # - libgomp 11.2.0      # [linux]
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   run:
+    - blas=*=openblas # [osx and x86_64]  
     - python
+    - dataclasses # [py<37]
     - numpy
     - scipy
+  run_constrained: 
     - scikit-learn !=0.22.0
-    - _openmp_mutex      # [linux]
+    - pandas>=0.24.0
+    - dask >=2.0.0
 
 test:
   imports:
     - lightgbm
   requires:
     - pip
+    - scikit-learn
   commands:
     - pip check
 
@@ -54,16 +61,12 @@ about:
   license_file: LICENSE
   summary: LightGBM is a gradient boosting framework that uses tree based learning algorithms.
   description: |
-    A fast, distributed, high performance gradient boosting (GBDT, GBRT, GBM or MART) framework based on decision tree algorithms, used for ranking, classification and many other machine learning tasks.
+    A fast, distributed, high performance gradient boosting (GBDT, GBRT, GBM or MART) framework 
+    based on decision tree algorithms, used for ranking, classification and many other machine learning tasks.
   doc_url: https://lightgbm.readthedocs.io
   dev_url: https://github.com/Microsoft/LightGBM
 
 extra:
-
-  anaconda-services:
-    ref: https://anaconda.zendesk.com/agent/tickets/30613 
-    recipe-maintainers:
-      - ianaobi
   recipe-maintainers:
     - synapticarbors
     - aldanor
