@@ -20,10 +20,12 @@ build:
 
 requirements:
   build:
-    - cmake >=3.8
-    - make                  # [unix]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake >=3.8
+    - make             # [unix]
+    - llvm-openmp      # [osx]
+    - _openmp_mutex    # [linux]
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
     # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64. 
@@ -33,8 +35,6 @@ requirements:
     - scikit-build-core >=0.4.4
     - python
     - pip
-    - llvm-openmp      # [osx]
-    - libgomp          # [linux]
   run:
     - blas=*=openblas  # [osx and x86_64]
     - python
