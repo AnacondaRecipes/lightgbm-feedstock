@@ -35,6 +35,7 @@ requirements:
     - scikit-build-core >=0.4.4
     - python
     - pip
+    - llvm-openmp      # [osx]
   run:
     - blas=*=openblas  # [osx and x86_64]
     - python
