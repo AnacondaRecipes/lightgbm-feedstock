@@ -22,6 +22,7 @@ requirements:
   build:
     - cmake >=3.8
     - ninja     # [unix]
+    - llvm-openmp      # [osx]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -33,7 +34,6 @@ requirements:
     - scikit-build-core >=0.4.4
     - python
     - pip
-    - llvm-openmp      # [osx]
   run:
     - _openmp_mutex    # [linux]
     - blas=*=openblas  # [osx and x86_64]
