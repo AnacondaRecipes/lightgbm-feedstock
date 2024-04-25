@@ -12,7 +12,8 @@ source:
 build:
   number: 0
   skip: true  # [py<36]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Ninja"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Visual Studio 16 2019"  # [win]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Ninja" # [unix]
   missing_dso_whitelist:  # [s390x or osx]
     - "*/ld64.so.1"       # [s390x]
     - '*/libc++.1.dylib'  # [osx]
