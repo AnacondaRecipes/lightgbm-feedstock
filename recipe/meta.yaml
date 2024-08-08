@@ -6,12 +6,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9e8a7640911481134e60987d5d1e1cd157f430c3b4b38de8d36fc55c302bc299
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 9e8a7640911481134e60987d5d1e1cd157f430c3b4b38de8d36fc55c302bc299
+  - url: https://github.com/microsoft/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 2633afd64f4f28c5563cb64e96adf8aa6fae58af11b13345166392fb05e56215
+    folder: tests
 
 build:
   number: 0
   skip: true  # [py<36]
+  script: ls
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Visual Studio 16 2019"  # [win]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.CMAKE_GENERATOR="Ninja" # [unix]
   missing_dso_whitelist:  # [s390x or osx]
@@ -50,13 +54,27 @@ requirements:
     - scikit-learn !=0.22.0
 
 test:
+  source_files:
+    - tests
   imports:
     - lightgbm
   requires:
     - pip
+    - matplotlib-base
+    - pytest
+    - cloudpickle
+    - psutil
+    # arrow
+    - pyarrow
+    - cffi
+    # panda
+    - pandas
+    # scikit-learn
     - scikit-learn
+
   commands:
     - pip check
+    - pytest -vv .
 
 about:
   home: https://github.com/Microsoft/LightGBM
