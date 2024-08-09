@@ -75,7 +75,7 @@ test:
   commands:
     - pip check
     - pytest -vv .  # [not s390x]
-    - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs ortest_contribs_sparse_multiclass or test_quantized_training)"  # [s390x]
+    - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training)"  # [s390x]
 
 about:
   home: https://github.com/Microsoft/LightGBM
