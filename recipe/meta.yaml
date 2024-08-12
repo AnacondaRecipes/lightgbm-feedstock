@@ -26,6 +26,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake >=3.18
+      # We currently don't have ninja 1.11, which upstream specifies. 
+      # However, this feedstock builds and passes tests with v1.10.2
     - ninja >=1.10.2  # [unix]
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
