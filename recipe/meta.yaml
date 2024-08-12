@@ -26,8 +26,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake >=3.18
-    # we currently don't have ninja 1.11 but it's building and passing tests
-    - ninja >=1.10.2
+    - ninja >=1.10.2  # [unix]
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
     # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64. 
@@ -73,7 +72,7 @@ test:
     - scikit-learn
   commands:
     - pip check
-    # skipping tests for s390x due to assertion error: Not equal to tolerance rtol=1e-07, atol=0
+    # skipping tests on s390x due to the accuracy required for computational tests.
     - pytest -vv .  # [not s390x]
     - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training)"  # [s390x]
 
