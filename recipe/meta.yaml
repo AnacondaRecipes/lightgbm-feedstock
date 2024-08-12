@@ -26,7 +26,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake >=3.18
-    - ninja >= 1.11
+    # we currently don't have ninja 1.11 but it's building and passing tests
+    - ninja >=1.10.2
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy) 
     # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64. 
