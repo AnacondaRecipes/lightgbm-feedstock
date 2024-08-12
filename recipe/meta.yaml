@@ -73,6 +73,7 @@ test:
     - scikit-learn
   commands:
     - pip check
+    # skipping tests for s390x due to assertion error: Not equal to tolerance rtol=1e-07, atol=0
     - pytest -vv .  # [not s390x]
     - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training)"  # [s390x]
 
