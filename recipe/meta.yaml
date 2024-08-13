@@ -77,7 +77,7 @@ test:
     - pip check
     # skipping tests on s390x due to the accuracy required for computational tests.
     - pytest -vv .  # [not s390x]
-    - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training)"  # [s390x]
+    - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training or test_contribs_sparse)"  # [s390x]
 
 about:
   home: https://github.com/Microsoft/LightGBM
