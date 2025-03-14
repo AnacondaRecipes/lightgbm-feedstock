@@ -28,14 +28,14 @@ requirements:
     - cmake >=3.18
       # We currently don't have ninja 1.11, which upstream specifies.
       # However, this feedstock builds and passes tests with v1.10.2
-    - ninja >=1.10.2  # [unix]
+    - ninja >=1.12.1  # [unix]
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy)
     # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64.
     # By default, mkl variants are picked. By picking the variant that uses openblas rather
     # than mkl, intel-openmp will not be pulled in and so you will not have llvm-openmp / intel-openmp conflict.
     - blas =*=openblas  # [osx and x86_64]
-    - scikit-build-core >=0.9.3
+    - scikit-build-core >=0.10.1
     - python
     - pip
     - llvm-openmp      # [osx]
@@ -43,10 +43,8 @@ requirements:
     - _openmp_mutex    # [linux]
     - blas =*=openblas  # [osx and x86_64]
     - python
-    - dataclasses      # [py<37]
     - numpy >=1.17.0
     - scipy
-    - typing_extensions
   run_constrained:
     - cffi >=1.15.1
     - dask >=2.0.0
