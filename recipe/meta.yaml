@@ -10,7 +10,8 @@ source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
     sha256: cb1c59720eb569389c0ba74d14f52351b573af489f230032a1c9f314f8bab7fe
     patches:
-      - patches/cuda13-compat.patch  # [gpu_variant == "cuda"]
+      - patches/cuda-win-nvcc-compat.patch   # [gpu_variant == "cuda"]
+      - patches/cuda13-drop-old-archs.patch  # [gpu_variant == "cuda"]
   - url: https://github.com/microsoft/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
     sha256: 71d2c25855f10e82da8cb8b0c42bdf0da56e5556ff50a93b31c0592b8932eda3
     folder: tests
