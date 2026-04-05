@@ -10,7 +10,7 @@
      endif()
      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
  endif()
-@@ -219,7 +220,12 @@
+@@ -219,7 +220,13 @@
  if(USE_CUDA)
      find_package(CUDAToolkit 11.0 REQUIRED)
      include_directories(${CUDAToolkit_INCLUDE_DIRS})
@@ -19,7 +19,8 @@
 +    if(NOT MSVC)
 +        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=-fPIC -Xcompiler=-Wall")
 +    else()
-+        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/utf-8")
++        # /utf-8 for cl.exe host compiler; -D for nvcc's own frontend (fmt static_assert)
++        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/utf-8 -D_MSVC_EXECUTION_CHARACTER_SET=65001")
 +    endif()
 
      # reference for mapping of CUDA toolkit component versions to supported architectures ("compute capabilities"):
