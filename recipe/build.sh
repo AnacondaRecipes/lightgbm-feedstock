@@ -1,6 +1,12 @@
 #!/bin/bash
 set -exo pipefail
 
+echo "[DEBUG] gpu_variant=${gpu_variant}"
+echo "[DEBUG] CUDA_HOME=${CUDA_HOME:-unset}"
+echo "[DEBUG] PREFIX=${PREFIX}"
+echo "[DEBUG] BUILD_PREFIX=${BUILD_PREFIX}"
+cmake --version
+
 CUDA_ARGS="-Ccmake.define.USE_CUDA=OFF"
 if [[ "${gpu_variant}" == "cuda" ]]; then
     # CMAKE_CUDA_STANDARD=17 required: GCC 14 headers use C++17 features
