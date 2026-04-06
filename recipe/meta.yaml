@@ -33,7 +33,6 @@ build:
   ignore_run_exports_from:                        # [gpu_variant == "cuda"]
     - {{ compiler('cuda') }}                      # [gpu_variant == "cuda"]
   missing_dso_whitelist:  # [s390x or osx or gpu_variant == "cuda"]
-    - "*/ld64.so.1"       # [s390x]
     - '*/libc++.1.dylib'  # [osx]
     - "**/libcuda.so*"    # [gpu_variant == "cuda"]
     - "**/nvcuda.dll"     # [win and gpu_variant == "cuda"]
