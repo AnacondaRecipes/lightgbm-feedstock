@@ -32,7 +32,7 @@ build:
   # pin_compatible(min_pin='x') instead for forward compat within major version.
   ignore_run_exports_from:                        # [gpu_variant == "cuda"]
     - {{ compiler('cuda') }}                      # [gpu_variant == "cuda"]
-  missing_dso_whitelist:  # [s390x or osx or gpu_variant == "cuda"]
+  missing_dso_whitelist:  # [osx or gpu_variant == "cuda"]
     - '*/libc++.1.dylib'  # [osx]
     - "**/libcuda.so*"    # [gpu_variant == "cuda"]
     - "**/nvcuda.dll"     # [win and gpu_variant == "cuda"]
