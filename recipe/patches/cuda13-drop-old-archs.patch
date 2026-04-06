@@ -1,0 +1,13 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -241,6 +241,10 @@
+         list(APPEND CUDA_ARCHS "100")
+         list(APPEND CUDA_ARCHS "120")
+     endif()
++    if(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "13.0")
++        # CUDA 13.x dropped support for compute capabilities < 7.5 (Maxwell, Pascal, Volta)
++        list(REMOVE_ITEM CUDA_ARCHS "60" "61" "62" "70")
++    endif()
+     # Generate PTX for the most recent architecture for forwards compatibility
+     list(POP_BACK CUDA_ARCHS CUDA_LAST_SUPPORTED_ARCH)
+     list(TRANSFORM CUDA_ARCHS APPEND "-real")

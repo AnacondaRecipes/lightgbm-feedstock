@@ -1,0 +1,71 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -179,7 +179,8 @@
+             find_package(OpenMP REQUIRED)
+         endif()
+     else()
+-        find_package(OpenMP REQUIRED)
++        # COMPONENTS C CXX: skip CUDA language (OpenMP_CUDA unavailable with MSVC nvcc)
++        find_package(OpenMP REQUIRED COMPONENTS C CXX)
+     endif()
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+ endif()
+@@ -219,7 +220,19 @@
+ if(USE_CUDA)
+     find_package(CUDAToolkit 11.0 REQUIRED)
+     include_directories(${CUDAToolkit_INCLUDE_DIRS})
+-    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=${OpenMP_CXX_FLAGS} -Xcompiler=-fPIC -Xcompiler=-Wall")
++    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=${OpenMP_CXX_FLAGS}")
++    if(NOT MSVC)
++        # -fPIC required for shared libraries on Linux/macOS;
++        # MSVC has no -fPIC equivalent (Windows PE/COFF is inherently position-independent).
++        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=-fPIC -Xcompiler=-Wall")
++    else()
++        # /utf-8 for cl.exe host compiler; FMT_UNICODE=0 disables fmt Unicode
++        # for nvcc device compilation (nvcc frontend doesn't support /utf-8,
++        # so fmt's compile-time UTF-8 encoding test always fails under nvcc).
++        # --diag_suppress 27: suppress "character value is out of range" from
++        # fmt's format.h which stores 32-bit ints in char32_t string literals.
++        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/utf-8 -DFMT_UNICODE=0 -Xcudafe --diag_suppress=27")
++    endif()
+ 
+     # reference for mapping of CUDA toolkit component versions to supported architectures ("compute capabilities"):
+     # https://en.wikipedia.org/wiki/CUDA#GPUs_supported
+--- a/include/LightGBM/meta.h
++++ b/include/LightGBM/meta.h
+@@ -47,13 +47,15 @@
+ typedef float label_t;
+ #endif
+ 
+-const score_t kMinScore = -std::numeric_limits<score_t>::infinity();
++// constexpr so nvcc can use these in device code (MSVC + nvcc requires constexpr,
++// plain const namespace-scope variables are not visible in __device__ functions).
++constexpr score_t kMinScore = -std::numeric_limits<score_t>::infinity();
+ 
+-const score_t kMaxScore = std::numeric_limits<score_t>::infinity();
++constexpr score_t kMaxScore = std::numeric_limits<score_t>::infinity();
+ 
+-const score_t kEpsilon = 1e-15f;
++constexpr score_t kEpsilon = 1e-15f;
+ 
+-const double kZeroThreshold = 1e-35f;
++constexpr double kZeroThreshold = 1e-35f;
+ 
+ 
+ typedef int32_t comm_size_t;
+--- a/src/treelearner/cuda/cuda_single_gpu_tree_learner.cpp
++++ b/src/treelearner/cuda/cuda_single_gpu_tree_learner.cpp
+@@ -505,9 +505,10 @@
+         max_cat_num_bin = std::max(bin_mapper->num_bin(), max_cat_num_bin);
+       }
+     }
+-    // std::max(..., 1UL) to avoid error in the case when there are NaN's in the categorical values
+-    const size_t cuda_bitset_max_size = std::max(static_cast<size_t>((max_cat_value + 31) / 32), 1UL);
+-    const size_t cuda_bitset_inner_max_size = std::max(static_cast<size_t>((max_cat_num_bin + 31) / 32), 1UL);
++    // std::max<size_t> to avoid error in the case when there are NaN's in the categorical values.
++    // Explicit template arg needed: on MSVC unsigned long (1UL) is 32-bit but size_t is 64-bit.
++    const size_t cuda_bitset_max_size = std::max<size_t>(static_cast<size_t>((max_cat_value + 31) / 32), 1);
++    const size_t cuda_bitset_inner_max_size = std::max<size_t>(static_cast<size_t>((max_cat_num_bin + 31) / 32), 1);
+     AllocateCUDAMemory<uint32_t>(&cuda_bitset_, cuda_bitset_max_size, __FILE__, __LINE__);
+     AllocateCUDAMemory<uint32_t>(&cuda_bitset_inner_, cuda_bitset_inner_max_size, __FILE__, __LINE__);
+     const int max_cat_in_split = std::min(config_->max_cat_threshold, max_cat_num_bin / 2);
