@@ -44,7 +44,7 @@ requirements:
     - {{ compiler('cuda') }}   # [gpu_variant == "cuda"]
     - {{ stdlib('c') }}
     - cmake >=3.18
-    - ninja >=1.12.1
+    - ninja-base >=1.12.1
   host:
     # This basically forces to pick scipy (and any other suitable packages in the chain, like numpy)
     # that was built with openblas rather than mkl. Openblas typically pairs with llvm-openmp and mkl with intel-openmp on osx-64.
