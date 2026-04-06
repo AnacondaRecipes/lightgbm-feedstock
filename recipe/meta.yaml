@@ -95,7 +95,6 @@ test:
     - pip check
     - python -c "import lightgbm; print('LightGBM version:', lightgbm.__version__)"
     # test_list_to_1d_numpy[...-pd_str]: pandas string dtype not supported by LightGBM
-    - pytest -vv -k "not (test_list_to_1d_numpy and pd_str)"  # [not s390x and gpu_variant != "cuda"]
     # CUDA: also skip position-in-ranking tests (not supported in CUDA version yet)
     - pytest -vv -k "not ((test_list_to_1d_numpy and pd_str) or test_dataset_construction_overwrites_user_provided_metadata_fields or test_ranking_with_position_information_with_dataset_constructor)"  # [gpu_variant == "cuda"]
     - pytest -vv -k "not (test_categorical_handle or test_categorical_handle_na or test_categorical_non_zero_inputs or test_contribs_sparse_multiclass or test_quantized_training or test_contribs_sparse or (test_list_to_1d_numpy and pd_str))"  # [s390x]
