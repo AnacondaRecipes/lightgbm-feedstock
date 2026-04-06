@@ -1,20 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -67,6 +67,13 @@
-     set(INSTALL_HEADERS OFF)
- endif()
- 
-+# --- conda-build debug ---
-+message(STATUS "[conda-debug] BUILD_CLI=${BUILD_CLI}")
-+message(STATUS "[conda-debug] __BUILD_FOR_PYTHON=${__BUILD_FOR_PYTHON}")
-+message(STATUS "[conda-debug] USE_CUDA=${USE_CUDA}")
-+message(STATUS "[conda-debug] CMAKE_GENERATOR=${CMAKE_GENERATOR}")
-+message(STATUS "[conda-debug] CMAKE_VERSION=${CMAKE_VERSION}")
-+
- if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.2")
-     message(FATAL_ERROR "Insufficient gcc version")
-@@ -179,7 +186,8 @@
+@@ -179,7 +179,8 @@
              find_package(OpenMP REQUIRED)
          endif()
      else()

@@ -23,7 +23,10 @@ build:
   string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                # [gpu_variant != "cuda"]
   skip: true  # [py<39]
   # Windows: inline scripts avoid conda-build's IF wrapper corrupting %VAR% in .bat files
-  script: "%PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.USE_CUDA=OFF"  # [win and gpu_variant != "cuda"]
+  script: "%PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.USE_CUDA=OFF -Ccmake.define.__BUILD_FOR_PYTHON=ON"  # [win and gpu_variant != "cuda"]
+  # CUDA Windows: Ninja required (MSBuild ignores conda env vars for CUDA paths).
+  # __BUILD_FOR_PYTHON=ON must be explicit because -Ccmake.args=-GNinja overrides
+  # pyproject.toml's cmake.args (which normally provides it).
   script: "set \"PATH=%BUILD_PREFIX%\\Library\\bin;%PATH%\" && set CUDA_HOME=%BUILD_PREFIX%\\Library && set CUDA_PATH=%BUILD_PREFIX%\\Library && set CUDAToolkit_ROOT=%BUILD_PREFIX%\\Library && set CMAKE_CUDA_COMPILER=%BUILD_PREFIX%\\Library\\bin\\nvcc.exe && set CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\\Library\\bin\\ninja.exe && set \"CMAKE_GENERATOR=\" && set \"CMAKE_GENERATOR_PLATFORM=\" && set \"CMAKE_GENERATOR_TOOLSET=\" && %PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.args=-GNinja -Ccmake.define.USE_CUDA=ON -Ccmake.define.__BUILD_FOR_PYTHON=ON -Ccmake.define.CMAKE_CUDA_STANDARD=17 -Ccmake.define.CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\\Library\\bin\\ninja.exe"  # [win and gpu_variant == "cuda"]
   # Suppress CUDA compiler run_exports (tight pin); use explicit cuda-version
   # pin_compatible(min_pin='x') instead for forward compat within major version.
