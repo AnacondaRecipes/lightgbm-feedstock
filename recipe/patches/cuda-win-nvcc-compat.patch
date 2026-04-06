@@ -10,13 +10,15 @@
      endif()
      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
  endif()
-@@ -219,7 +227,17 @@
+@@ -219,7 +220,19 @@
  if(USE_CUDA)
      find_package(CUDAToolkit 11.0 REQUIRED)
      include_directories(${CUDAToolkit_INCLUDE_DIRS})
 -    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=${OpenMP_CXX_FLAGS} -Xcompiler=-fPIC -Xcompiler=-Wall")
 +    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=${OpenMP_CXX_FLAGS}")
 +    if(NOT MSVC)
++        # -fPIC required for shared libraries on Linux/macOS;
++        # MSVC has no -fPIC equivalent (Windows PE/COFF is inherently position-independent).
 +        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=-fPIC -Xcompiler=-Wall")
 +    else()
 +        # /utf-8 for cl.exe host compiler; FMT_UNICODE=0 disables fmt Unicode
