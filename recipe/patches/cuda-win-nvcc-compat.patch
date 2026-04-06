@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -67,6 +67,15 @@
+@@ -67,6 +67,13 @@
      set(INSTALL_HEADERS OFF)
  endif()
  
@@ -8,15 +8,13 @@
 +message(STATUS "[conda-debug] BUILD_CLI=${BUILD_CLI}")
 +message(STATUS "[conda-debug] __BUILD_FOR_PYTHON=${__BUILD_FOR_PYTHON}")
 +message(STATUS "[conda-debug] USE_CUDA=${USE_CUDA}")
-+message(STATUS "[conda-debug] EXECUTABLE_OUTPUT_PATH=${EXECUTABLE_OUTPUT_PATH}")
-+message(STATUS "[conda-debug] PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
 +message(STATUS "[conda-debug] CMAKE_GENERATOR=${CMAKE_GENERATOR}")
 +message(STATUS "[conda-debug] CMAKE_VERSION=${CMAKE_VERSION}")
 +
  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.2")
      message(FATAL_ERROR "Insufficient gcc version")
-@@ -179,7 +188,8 @@
+@@ -179,7 +186,8 @@
              find_package(OpenMP REQUIRED)
          endif()
      else()
@@ -26,7 +24,7 @@
      endif()
      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
  endif()
-@@ -219,7 +229,17 @@
+@@ -219,7 +227,17 @@
  if(USE_CUDA)
      find_package(CUDAToolkit 11.0 REQUIRED)
      include_directories(${CUDAToolkit_INCLUDE_DIRS})
@@ -45,23 +43,6 @@
  
      # reference for mapping of CUDA toolkit component versions to supported architectures ("compute capabilities"):
      # https://en.wikipedia.org/wiki/CUDA#GPUs_supported
-@@ -781,6 +801,16 @@
-   )
- endif()
- 
-+# --- conda-build debug: dump install context ---
-+install(CODE "
-+    message(STATUS \"[conda-debug] CMAKE_INSTALL_PREFIX=\\${CMAKE_INSTALL_PREFIX}\")
-+    message(STATUS \"[conda-debug] CMAKE_INSTALL_CONFIG_NAME=\\${CMAKE_INSTALL_CONFIG_NAME}\")
-+    file(GLOB _lgbm_exe \"${CMAKE_SOURCE_DIR}/lightgbm*\")
-+    message(STATUS \"[conda-debug] Files matching lightgbm* in source dir: \\${_lgbm_exe}\")
-+    file(GLOB _lgbm_dll \"${CMAKE_SOURCE_DIR}/lib_lightgbm*\")
-+    message(STATUS \"[conda-debug] Files matching lib_lightgbm* in source dir: \\${_lgbm_dll}\")
-+")
-+
- install(
-   TARGETS _lightgbm
-   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 --- a/include/LightGBM/meta.h
 +++ b/include/LightGBM/meta.h
 @@ -47,13 +47,15 @@
