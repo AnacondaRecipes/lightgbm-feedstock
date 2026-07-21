@@ -1,5 +1,5 @@
 {% set name = "lightgbm" %}
-{% set version = "4.6.0" %}
+{% set version = "4.7.0" %}
 {% set build_number = 2 %}
 
 package:
@@ -8,40 +8,40 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: cb1c59720eb569389c0ba74d14f52351b573af489f230032a1c9f314f8bab7fe
+    sha256: f8e20f682c9aabd000bcf4a7ed8aa6f473c1adfecccae34ec24e823d156f4af0
     patches:
-      - patches/cuda-win-nvcc-compat.patch   # [gpu_variant == "cuda"]
+      - patches/cuda-win-nvcc-compat.patch  # [gpu_variant == "cuda"]
       - patches/cuda13-drop-old-archs.patch  # [gpu_variant == "cuda"]
   - url: https://github.com/microsoft/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 71d2c25855f10e82da8cb8b0c42bdf0da56e5556ff50a93b31c0592b8932eda3
+    sha256: 2463b653b456cb3c9816dd014105d05917e38432f360f9e9739b5446fac9021d
     folder: tests
 
 build:
-  number: {{ build_number + 100 }}  # [gpu_variant == "cuda"]
-  number: {{ build_number }}        # [gpu_variant != "cuda"]
+  number: 0
+  number: {{ build_number }}  # [gpu_variant != "cuda"]
   string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [gpu_variant == "cuda"]
-  string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                # [gpu_variant != "cuda"]
+  string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [gpu_variant != "cuda"]
   skip: true  # [py<39]
   # Windows: inline scripts avoid conda-build's IF wrapper corrupting %VAR% in .bat files
   script: "%PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.define.USE_CUDA=OFF -Ccmake.define.__BUILD_FOR_PYTHON=ON"  # [win and gpu_variant != "cuda"]
   # CUDA Windows: Ninja required (MSBuild ignores conda env vars for CUDA paths).
   # __BUILD_FOR_PYTHON=ON must be explicit because -Ccmake.args=-GNinja overrides
   # pyproject.toml's cmake.args (which normally provides it).
-  script: "set \"PATH=%BUILD_PREFIX%\\Library\\bin;%PATH%\" && set CUDA_HOME=%BUILD_PREFIX%\\Library && set CUDA_PATH=%BUILD_PREFIX%\\Library && set CUDAToolkit_ROOT=%BUILD_PREFIX%\\Library && set CMAKE_CUDA_COMPILER=%BUILD_PREFIX%\\Library\\bin\\nvcc.exe && set CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\\Library\\bin\\ninja.exe && set \"CMAKE_GENERATOR=\" && set \"CMAKE_GENERATOR_PLATFORM=\" && set \"CMAKE_GENERATOR_TOOLSET=\" && %PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.args=-GNinja -Ccmake.define.USE_CUDA=ON -Ccmake.define.__BUILD_FOR_PYTHON=ON -Ccmake.define.CMAKE_CUDA_STANDARD=17 -Ccmake.define.CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\\Library\\bin\\ninja.exe"  # [win and gpu_variant == "cuda"]
+  script: set "PATH=%BUILD_PREFIX%\Library\bin;%PATH%" && set CUDA_HOME=%BUILD_PREFIX%\Library && set CUDA_PATH=%BUILD_PREFIX%\Library && set CUDAToolkit_ROOT=%BUILD_PREFIX%\Library && set CMAKE_CUDA_COMPILER=%BUILD_PREFIX%\Library\bin\nvcc.exe && set CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\Library\bin\ninja.exe && set "CMAKE_GENERATOR=" && set "CMAKE_GENERATOR_PLATFORM=" && set "CMAKE_GENERATOR_TOOLSET=" && %PYTHON% -m pip install . --no-deps --no-build-isolation -vv -Ccmake.args=-GNinja -Ccmake.define.USE_CUDA=ON -Ccmake.define.__BUILD_FOR_PYTHON=ON -Ccmake.define.CMAKE_CUDA_STANDARD=17 -Ccmake.define.CMAKE_MAKE_PROGRAM=%BUILD_PREFIX%\Library\bin\ninja.exe  # [win and gpu_variant == "cuda"]
   # Suppress CUDA compiler run_exports (tight pin); use explicit cuda-version
   # pin_compatible(min_pin='x') instead for forward compat within major version.
-  ignore_run_exports_from:                        # [gpu_variant == "cuda"]
-    - {{ compiler('cuda') }}                      # [gpu_variant == "cuda"]
+  ignore_run_exports_from:  # [gpu_variant == "cuda"]
+    - {{ compiler('cuda') }}  # [gpu_variant == "cuda"]
   missing_dso_whitelist:  # [osx or gpu_variant == "cuda"]
-    - '*/libc++.1.dylib'  # [osx]
-    - "**/libcuda.so*"    # [gpu_variant == "cuda"]
-    - "**/nvcuda.dll"     # [win and gpu_variant == "cuda"]
+    - "*/libc++.1.dylib"  # [osx]
+    - "**/libcuda.so*"  # [gpu_variant == "cuda"]
+    - "**/nvcuda.dll"  # [win and gpu_variant == "cuda"]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ compiler('cuda') }}   # [gpu_variant == "cuda"]
+    - {{ compiler('cuda') }}  # [gpu_variant == "cuda"]
     - {{ stdlib('c') }}
     - cmake >=3.18
     - ninja-base >=1.12.1
@@ -54,20 +54,20 @@ requirements:
     - scikit-build-core >=0.10.1
     - python
     - pip
-    - llvm-openmp                                          # [osx]
-    - libgomp          # [linux]
-    - vcomp14          # [win and x86_64]
-    - cuda-version {{ cuda_compiler_version }}              # [gpu_variant == "cuda"]
-    - cuda-cudart-dev                                      # [gpu_variant == "cuda"]
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - vcomp14  # [win and x86_64]
+    - cuda-version {{ cuda_compiler_version }}  # [gpu_variant == "cuda"]
+    - cuda-cudart-dev  # [gpu_variant == "cuda"]
   run:
-    - libgomp          # [linux]
-    - vcomp14          # [win and x86_64]
+    - libgomp  # [linux]
+    - vcomp14  # [win and x86_64]
     - blas =*=openblas  # [osx and x86_64]
     - python
     - numpy >=1.17.0
     - scipy
-    - {{ pin_compatible('cuda-version', min_pin='x') }}    # [gpu_variant == "cuda"]
-    - __cuda                                               # [gpu_variant == "cuda"]
+    - {{ pin_compatible('cuda-version', min_pin='x') }}  # [gpu_variant == "cuda"]
+    - __cuda  # [gpu_variant == "cuda"]
   run_constrained:
     - cffi >=1.15.1
     - dask >=2.0.0
